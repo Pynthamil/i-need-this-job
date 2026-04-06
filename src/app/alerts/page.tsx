@@ -14,6 +14,13 @@ const BIG_TECH = [
   { id: "amazon", name: "Amazon", icon: <Zap className="h-4 w-4 text-orange-400" /> },
 ];
 
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Big Tech Alerts | EarlyBird Jobs",
+  description: "Get real-time alerts from Google, Apple, Meta, and more.",
+};
+
 export default async function AlertsPage() {
   const followed = await getFollowedCompaniesAction();
   const bigTechJobs = await getJobsFromIndia({ bigTech: true });

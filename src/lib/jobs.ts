@@ -10,6 +10,18 @@ export interface Job {
   description?: string;
 }
 
+interface ArbeitnowJob {
+  slug: string;
+  title: string;
+  company_name: string;
+  location: string;
+  remote: boolean;
+  tags: string[];
+  created_at: number;
+  url: string;
+  description?: string;
+}
+
 function calculateRelativeTime(timestamp: number): string {
   const hoursAgo = Math.floor((Date.now() - timestamp * 1000) / (1000 * 60 * 60));
   if (hoursAgo < 1) return "Just now";
@@ -19,10 +31,24 @@ function calculateRelativeTime(timestamp: number): string {
 
 export async function getJobsFromIndia(filters?: { company?: string, bigTech?: boolean }): Promise<Job[]> {
   try {
-    const res = await fetch("https://www.arbeitnow.com/api/job-board-api", { next: { revalidate: 300 } });
+    const res = await fetch("https://www.arbeitnow.com/api/job-board-api", { 
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(10000)
+    });
+
+    if (!res.ok) {
+      throw new Error(`API returned ${res.status}: ${res.statusText}`);
+    }
+
     const data = await res.json();
     
-    let jobs = data.data.filter((job: any) => {
+    if (!data || !Array.isArray(data.data)) {
+      throw new Error("Invalid API response format");
+    }
+
+    const rawJobs = data.data as ArbeitnowJob[];
+
+    const jobs = rawJobs.filter((job) => {
       const loc = (job.location || "").toLowerCase();
       const isRemoteOrIndia = loc.includes("india") || loc.includes("remote") || loc.includes("anywhere") || job.remote;
       
@@ -32,13 +58,13 @@ export async function getJobsFromIndia(filters?: { company?: string, bigTech?: b
       
       if (filters?.bigTech) {
         const bigTechList = ["google", "apple", "amazon", "meta", "microsoft", "netflix"];
-        return isRemoteOrIndia && bigTechList.some(bt => job.company_name.toLowerCase().includes(bt));
+        return isRemoteOrIndia && bigTechList.some((bt: string) => job.company_name.toLowerCase().includes(bt));
       }
 
       return isRemoteOrIndia;
     });
 
-    return jobs.map((job: any) => ({
+    return jobs.map((job) => ({
       id: job.slug,
       title: job.title,
       company: job.company_name,
@@ -49,17 +75,30 @@ export async function getJobsFromIndia(filters?: { company?: string, bigTech?: b
       url: job.url,
     })).slice(0, 10);
   } catch (error) {
-    console.error("Error fetching jobs:", error);
+    console.error("Error fetching jobs from India:", error);
     return [];
   }
 }
 
 export async function getJobBySlug(slug: string): Promise<Job | null> {
   try {
-    const res = await fetch("https://www.arbeitnow.com/api/job-board-api", { next: { revalidate: 300 } });
+    const res = await fetch("https://www.arbeitnow.com/api/job-board-api", { 
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(10000)
+    });
+
+    if (!res.ok) {
+      throw new Error(`API returned ${res.status}: ${res.statusText}`);
+    }
+
     const data = await res.json();
     
-    const job = data.data.find((j: any) => j.slug === slug);
+    if (!data || !Array.isArray(data.data)) {
+      throw new Error("Invalid API response format");
+    }
+
+    const rawJobs = data.data as ArbeitnowJob[];
+    const job = rawJobs.find((j) => j.slug === slug);
     if (!job) return null;
 
     return {
@@ -73,7 +112,7 @@ export async function getJobBySlug(slug: string): Promise<Job | null> {
       description: job.description,
     };
   } catch (error) {
-    console.error("Error fetching job by slug:", error);
+    console.error(`Error fetching job with slug ${slug}:`, error);
     return null;
   }
 }

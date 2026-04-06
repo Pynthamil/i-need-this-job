@@ -10,7 +10,6 @@ const config = {
   url: process.env.DATABASE_URL || "file:./dev.db",
 };
 
-const libsql = createClient(config);
 const adapter = new PrismaLibSql(config);
 
 export const prisma =

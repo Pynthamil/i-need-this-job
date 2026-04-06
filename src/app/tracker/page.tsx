@@ -1,9 +1,18 @@
-import { Briefcase, Calendar, CheckCircle, Clock, MoreVertical, Trash2 } from "lucide-react";
+import { Briefcase, Calendar, CheckCircle, Clock, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { deleteApplicationAction, updateApplicationStatusAction } from "@/app/actions/tracker";
+import { Metadata } from "next";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ApplicationWithJob = any;
+
+export const metadata: Metadata = {
+  title: "Application Tracker | EarlyBird Jobs",
+  description: "Track your job applications and move them through the hiring pipeline.",
+};
 
 const STAGES = [
   { id: "applied", label: "Applied", icon: <Clock className="w-4 h-4 text-orange-500" /> },
@@ -19,7 +28,7 @@ export default async function TrackerPage() {
     orderBy: {
       updatedAt: "desc",
     },
-  });
+  }) as ApplicationWithJob[];
 
   return (
     <div className="container mx-auto max-w-6xl px-4 py-8">

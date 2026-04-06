@@ -3,6 +3,12 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { getProfileAction, updateProfileAction } from "@/app/actions/profile";
 import { User, Link as LinkIcon, Briefcase, Globe, FileText, Layout } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Career Profile | EarlyBird Jobs",
+  description: "Manage your resume, career links, and job preferences.",
+};
 
 export default async function ProfilePage() {
   const user = await getProfileAction();
@@ -75,7 +81,7 @@ export default async function ProfilePage() {
               <Briefcase className="h-5 w-5 text-primary" />
               <CardTitle>Career Data</CardTitle>
             </div>
-            <CardDescription>Add the assets you'll use for applying to new roles.</CardDescription>
+            <CardDescription>Add the assets you&apos;ll use for applying to new roles.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">

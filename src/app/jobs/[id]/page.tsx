@@ -5,6 +5,19 @@ import { Badge } from "@/components/ui/badge";
 import { getJobBySlug } from "@/lib/jobs";
 import { notFound } from "next/navigation";
 import { trackJobAction } from "@/app/actions/tracker";
+import { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const job = await getJobBySlug(id);
+  
+  if (!job) return { title: "Job Not Found | EarlyBird Jobs" };
+  
+  return {
+    title: `${job.title} at ${job.company} | EarlyBird Jobs`,
+    description: `Apply for the ${job.title} position at ${job.company} as seen on EarlyBird Jobs.`,
+  };
+}
 
 export default async function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { JobCard } from "@/components/job-card";
 import { FilterBar } from "@/components/filter-bar";
 import { getJobsFromIndia } from "@/lib/jobs";
@@ -5,6 +6,11 @@ import { getFollowedCompaniesAction } from "@/app/actions/alerts";
 import { Badge } from "@/components/ui/badge";
 import { Zap, Bell } from "lucide-react";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Job Feed | EarlyBird Jobs",
+  description: "Browse the latest software development jobs in India and Remote.",
+};
 
 export default async function DashboardPage() {
   const latestJobs = await getJobsFromIndia();
