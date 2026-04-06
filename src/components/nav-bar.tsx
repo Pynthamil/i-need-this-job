@@ -17,12 +17,8 @@ export function NavBar() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" className="hidden md:flex" asChild>
-            <Link href="/login">Log in</Link>
-          </Button>
-          <Button size="sm" asChild>
-            <Link href="/dashboard">Get Started</Link>
-          </Button>
+          <Button variant="ghost" size="sm" className="hidden md:flex" render={<Link href="/login">Log in</Link>} />
+          <Button size="sm" render={<Link href="/dashboard">Get Started</Link>} />
         </div>
       </div>
     </nav>

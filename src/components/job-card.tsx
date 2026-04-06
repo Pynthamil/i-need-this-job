@@ -53,11 +53,11 @@ export function JobCard({ id, title, company, location, tags, postedAt, isHot }:
       </CardContent>
 
       <CardFooter className="pt-0 justify-end gap-3 mt-auto">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href={`/jobs/${id}`}>View Details</Link>
+        <Button variant="ghost" size="sm" render={<Link href={`/jobs/${id}`} />}>
+          View Details
         </Button>
-        <Button size="sm" asChild>
-          <Link href={`/jobs/${id}?apply=true`}>Fast Apply</Link>
+        <Button size="sm" render={<Link href={`/jobs/${id}?apply=true`} />}>
+          Fast Apply
         </Button>
       </CardFooter>
     </Card>
