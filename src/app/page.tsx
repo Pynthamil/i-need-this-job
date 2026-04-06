@@ -6,7 +6,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col items-center justify-center flex-1 px-4 text-center">
       <div className="max-w-3xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-neutral-100 to-neutral-500 pb-2">
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-neutral-900 to-neutral-500 pb-2">
           Apply early. <br className="md:hidden" /> Get ahead.
         </h1>
         

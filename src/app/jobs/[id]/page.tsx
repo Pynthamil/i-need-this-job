@@ -36,8 +36,8 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             </div>
           </div>
 
-          <div className="prose prose-invert max-w-none prose-p:text-muted-foreground prose-li:text-muted-foreground prose-h3:text-foreground">
-            <h3 className="text-xl font-semibold mb-4 text-foreground border-b pb-2">Job Description</h3>
+          <div className="prose max-w-none prose-p:text-muted-foreground prose-li:text-muted-foreground prose-h3:text-foreground">
+            <h3 className="text-xl font-semibold mb-4 text-foreground border-b border-border pb-2">Job Description</h3>
             <div 
               className="mt-4 break-words leading-relaxed space-y-4"
               dangerouslySetInnerHTML={{ __html: job.description || "" }} 
