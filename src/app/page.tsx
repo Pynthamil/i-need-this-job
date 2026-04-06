@@ -15,10 +15,10 @@ export default function LandingPage() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <Button size="lg" className="rounded-full w-full sm:w-auto h-12 px-8" render={<Link href="/dashboard" />}>
+          <Button size="lg" className="rounded-full w-full sm:w-auto h-12 px-8" render={<Link href="/dashboard" />} nativeButton={false}>
             Start Applying Now <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
-          <Button size="lg" variant="outline" className="rounded-full w-full sm:w-auto h-12 px-8" render={<Link href="#features" />}>
+          <Button size="lg" variant="outline" className="rounded-full w-full sm:w-auto h-12 px-8" render={<Link href="#features" />} nativeButton={false}>
             See how it works
           </Button>
         </div>

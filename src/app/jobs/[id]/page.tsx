@@ -69,7 +69,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               </div>
             </div>
 
-            <Button className="w-full mb-3" size="lg" render={<a href={job.url} target="_blank" rel="noopener noreferrer" />}>
+            <Button className="w-full mb-3" size="lg" render={<a href={job.url} target="_blank" rel="noopener noreferrer" />} nativeButton={false}>
               Apply on Company Site <ExternalLink className="ml-2 h-4 w-4" />
             </Button>
             
