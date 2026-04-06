@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { ArrowLeft, Building2, MapPin, Clock, CheckCircle2, ChevronRight, ExternalLink } from "lucide-react";
+import { ArrowLeft, Building2, MapPin, Clock, CheckCircle2, ChevronRight, ExternalLink, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getJobBySlug } from "@/lib/jobs";
 import { notFound } from "next/navigation";
+import { trackJobAction } from "@/app/actions/tracker";
 
 export default async function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -73,13 +74,22 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               Apply on Company Site <ExternalLink className="ml-2 h-4 w-4" />
             </Button>
             
-            <Button variant="outline" className="w-full text-muted-foreground" size="lg">
-              Save for later
-            </Button>
+            <form action={trackJobAction}>
+              <input type="hidden" name="jobId" value={id} />
+              <input type="hidden" name="title" value={job.title} />
+              <input type="hidden" name="company" value={job.company} />
+              <input type="hidden" name="location" value={job.location} />
+              <input type="hidden" name="url" value={job.url} />
+              <input type="hidden" name="tags" value={job.tags.join(',')} />
+              <Button type="submit" variant="outline" className="w-full text-foreground group" size="lg">
+                <Plus className="mr-2 h-4 w-4 transition-transform group-hover:rotate-90" />
+                Move to Application Tracker
+              </Button>
+            </form>
             
             <div className="mt-6 pt-6 border-t">
               <Link href="/tracker" className="flex items-center justify-between text-sm text-muted-foreground hover:text-foreground transition-colors group">
-                Move to Application Tracker
+                View Tracker Dashboard
                 <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>

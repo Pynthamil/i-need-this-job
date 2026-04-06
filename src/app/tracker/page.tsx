@@ -1,6 +1,9 @@
-import { Briefcase, Calendar, CheckCircle, Clock } from "lucide-react";
+import { Briefcase, Calendar, CheckCircle, Clock, MoreVertical, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { prisma } from "@/lib/prisma";
+import { Button } from "@/components/ui/button";
+import { deleteApplicationAction, updateApplicationStatusAction } from "@/app/actions/tracker";
 
 const STAGES = [
   { id: "applied", label: "Applied", icon: <Clock className="w-4 h-4 text-orange-500" /> },
@@ -8,13 +11,16 @@ const STAGES = [
   { id: "offer", label: "Offer Received", icon: <CheckCircle className="w-4 h-4 text-green-500" /> },
 ];
 
-const TRACKED_APPLICATIONS = [
-  { id: 1, company: "Notion", role: "Frontend Engineer Intern", date: "Oct 24", stage: "applied" },
-  { id: 2, company: "Vercel", role: "Software Engineer", date: "Oct 20", stage: "interviewing" },
-  { id: 3, company: "Linear", role: "Backend Engineer II", date: "Oct 15", stage: "offer" }
-];
+export default async function TrackerPage() {
+  const applications = await prisma.application.findMany({
+    include: {
+      job: true,
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
+  });
 
-export default function TrackerPage() {
   return (
     <div className="container mx-auto max-w-6xl px-4 py-8">
       <div className="mb-8 flex items-center justify-between">
@@ -25,39 +31,68 @@ export default function TrackerPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in zoom-in-95 duration-500">
-        {STAGES.map((stage) => (
-          <div key={stage.id} className="rounded-xl border bg-muted/20 p-4">
-            <div className="flex items-center justify-between mb-4 px-1">
-              <h2 className="font-semibold flex items-center gap-2">
-                {stage.icon}
-                {stage.label}
-              </h2>
-              <Badge variant="secondary" className="rounded-full px-2">
-                {TRACKED_APPLICATIONS.filter(a => a.stage === stage.id).length}
-              </Badge>
-            </div>
-            
-            <div className="space-y-3">
-              {TRACKED_APPLICATIONS.filter(a => a.stage === stage.id).map(app => (
-                <Card key={app.id} className="cursor-grab hover:border-primary/50 transition-colors">
-                  <CardContent className="p-4">
-                    <div className="font-semibold mb-1">{app.role}</div>
-                    <div className="flex items-center text-sm text-muted-foreground justify-between">
-                      <span className="flex items-center gap-1.5"><Briefcase className="w-3.5 h-3.5" />{app.company}</span>
-                      <span className="text-xs">{app.date}</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+        {STAGES.map((stage) => {
+          const stageApps = applications.filter((a) => a.status === stage.id);
+          
+          return (
+            <div key={stage.id} className="rounded-xl border bg-muted/20 p-4 flex flex-col h-full">
+              <div className="flex items-center justify-between mb-4 px-1">
+                <h2 className="font-semibold flex items-center gap-2">
+                  {stage.icon}
+                  {stage.label}
+                </h2>
+                <Badge variant="secondary" className="rounded-full px-2">
+                  {stageApps.length}
+                </Badge>
+              </div>
               
-              {TRACKED_APPLICATIONS.filter(a => a.stage === stage.id).length === 0 && (
-                <div className="text-center p-6 border border-dashed rounded-lg text-sm text-muted-foreground">
-                  No applications
-                </div>
-              )}
+              <div className="space-y-3 flex-1 overflow-y-auto">
+                {stageApps.map((app) => (
+                  <Card key={app.id} className="group hover:border-primary/50 transition-all shadow-sm">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="font-semibold leading-tight pr-2">{app.job.title}</div>
+                        <form action={deleteApplicationAction.bind(null, app.id)}>
+                          <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:bg-destructive/10" type="submit">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </form>
+                      </div>
+                      
+                      <div className="flex items-center text-sm text-muted-foreground mb-4">
+                        <Briefcase className="w-3.5 h-3.5 mr-1.5" />
+                        {app.job.company}
+                      </div>
+
+                      <div className="flex gap-2">
+                        {stage.id === "applied" && (
+                          <form action={updateApplicationStatusAction.bind(null, app.id, "interviewing")} className="w-full">
+                            <Button variant="outline" size="sm" className="w-full text-xs h-7" type="submit">
+                              Mark as Interviewing
+                            </Button>
+                          </form>
+                        )}
+                        {stage.id === "interviewing" && (
+                          <form action={updateApplicationStatusAction.bind(null, app.id, "offer")} className="w-full">
+                            <Button variant="outline" size="sm" className="w-full text-xs h-7 bg-primary/5 border-primary/20 text-primary" type="submit">
+                              Mark as Offer
+                            </Button>
+                          </form>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+                
+                {stageApps.length === 0 && (
+                  <div className="text-center p-8 border border-dashed rounded-lg text-sm text-muted-foreground bg-background/50">
+                    No applications here
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
