@@ -17,27 +17,37 @@ function calculateRelativeTime(timestamp: number): string {
   return `${Math.floor(hoursAgo / 24)}d ago`;
 }
 
-export async function getJobsFromIndia(): Promise<Job[]> {
+export async function getJobsFromIndia(filters?: { company?: string, bigTech?: boolean }): Promise<Job[]> {
   try {
     const res = await fetch("https://www.arbeitnow.com/api/job-board-api", { next: { revalidate: 300 } });
     const data = await res.json();
     
-    return data.data
-      .filter((job: any) => {
-        const loc = (job.location || "").toLowerCase();
-        return loc.includes("india") || loc.includes("remote") || loc.includes("anywhere") || job.remote;
-      })
-      .map((job: any) => ({
-        id: job.slug,
-        title: job.title,
-        company: job.company_name,
-        location: job.location || "Remote",
-        tags: job.tags ? job.tags.slice(0, 3) : ["tech", "remote"],
-        postedAt: calculateRelativeTime(job.created_at),
-        isHot: Math.floor((Date.now() - job.created_at * 1000) / (1000 * 60 * 60)) < 24,
-        url: job.url,
-      }))
-      .slice(0, 10);
+    let jobs = data.data.filter((job: any) => {
+      const loc = (job.location || "").toLowerCase();
+      const isRemoteOrIndia = loc.includes("india") || loc.includes("remote") || loc.includes("anywhere") || job.remote;
+      
+      if (filters?.company) {
+        return isRemoteOrIndia && job.company_name.toLowerCase().includes(filters.company.toLowerCase());
+      }
+      
+      if (filters?.bigTech) {
+        const bigTechList = ["google", "apple", "amazon", "meta", "microsoft", "netflix"];
+        return isRemoteOrIndia && bigTechList.some(bt => job.company_name.toLowerCase().includes(bt));
+      }
+
+      return isRemoteOrIndia;
+    });
+
+    return jobs.map((job: any) => ({
+      id: job.slug,
+      title: job.title,
+      company: job.company_name,
+      location: job.location || "Remote",
+      tags: job.tags ? job.tags.slice(0, 3) : ["tech", "remote"],
+      postedAt: calculateRelativeTime(job.created_at),
+      isHot: Math.floor((Date.now() - job.created_at * 1000) / (1000 * 60 * 60)) < 24,
+      url: job.url,
+    })).slice(0, 10);
   } catch (error) {
     console.error("Error fetching jobs:", error);
     return [];

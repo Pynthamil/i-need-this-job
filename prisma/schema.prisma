@@ -16,6 +16,7 @@ model User {
   portfolio_url String?
   github_url   String?
   linkedin_url String?
+  followed_companies String? // Comma-separated list of companies
   preferences  String?       // Stored as JSON or comma-separated
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt

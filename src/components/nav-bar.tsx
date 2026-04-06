@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bird } from "lucide-react";
+import { Bird, Bell } from "lucide-react";
 import { Button } from "./ui/button";
 
 export function NavBar() {
@@ -18,7 +18,11 @@ export function NavBar() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" className="hidden md:flex" render={<Link href="/login">Log in</Link>} nativeButton={false} />
+          <Link href="/alerts" className="relative h-8 w-8 rounded-full border bg-background flex items-center justify-center hover:bg-muted transition-colors transition-all active:scale-95 group">
+            <Bell className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+            <span className="absolute top-1.5 right-1.5 flex h-2 w-2 rounded-full bg-primary animate-pulse" />
+          </Link>
+          <Button variant="ghost" size="sm" className="hidden md:flex text-muted-foreground" render={<Link href="/login">Log in</Link>} nativeButton={false} />
           <Button size="sm" render={<Link href="/dashboard">Get Started</Link>} nativeButton={false} />
         </div>
       </div>
