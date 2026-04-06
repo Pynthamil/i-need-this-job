@@ -2,11 +2,17 @@ import Link from "next/link";
 import { ArrowLeft, Building2, MapPin, Clock, CheckCircle2, ChevronRight, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { getJobBySlug } from "@/lib/jobs";
+import { notFound } from "next/navigation";
 
 export default async function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const job = await getJobBySlug(id);
   
-  // In a real app we would fetch the job based on the id
+  if (!job) {
+    return notFound();
+  }
+
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
       <Link href="/dashboard" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground mb-6 transition-colors">
@@ -17,29 +23,24 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         <div className="lg:col-span-2 space-y-8 animate-in fade-in slide-in-from-left-4 duration-500">
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <Badge variant="secondary" className="bg-primary/10 text-primary">Frontend</Badge>
-              <Badge variant="secondary" className="bg-green-500/10 text-green-600">Internship</Badge>
+              {job.tags.map((tag) => (
+                <Badge key={tag} variant="secondary" className="bg-primary/10 text-primary">{tag}</Badge>
+              ))}
             </div>
-            <h1 className="text-3xl font-bold tracking-tight mb-4">Frontend Engineer Intern (Job #{id})</h1>
+            <h1 className="text-3xl font-bold tracking-tight mb-4">{job.title}</h1>
             <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
-              <span className="flex items-center"><Building2 className="mr-2 h-5 w-5" /> Notion</span>
-              <span className="flex items-center"><MapPin className="mr-2 h-5 w-5" /> Remote, US</span>
-              <span className="flex items-center"><Clock className="mr-2 h-5 w-5" /> Posted 12m ago</span>
+              <span className="flex items-center"><Building2 className="mr-2 h-5 w-5" /> {job.company}</span>
+              <span className="flex items-center"><MapPin className="mr-2 h-5 w-5" /> {job.location}</span>
+              <span className="flex items-center text-primary/80 font-medium"><Clock className="mr-2 h-5 w-5" /> Posted {job.postedAt}</span>
             </div>
           </div>
 
-          <div className="prose prose-invert max-w-none">
-            <h3 className="text-xl font-semibold mb-4 text-foreground">About the role</h3>
-            <p className="text-muted-foreground mb-6">
-              We are looking for a highly motivated Frontend Engineering Intern to join our core product team. You will be responsible for building highly interactive and performant web interfaces using React and Next.js.
-            </p>
-            <h3 className="text-xl font-semibold mb-4 text-foreground">Requirements</h3>
-            <ul className="list-disc pl-5 text-muted-foreground space-y-2 mb-6">
-              <li>Currently pursuing a BS/MS in Computer Science or related field</li>
-              <li>Experience building web applications with React</li>
-              <li>Strong understanding of HTML, CSS, and modern JavaScript/TypeScript</li>
-              <li>Passion for UI/UX and product excellence</li>
-            </ul>
+          <div className="prose prose-invert max-w-none prose-p:text-muted-foreground prose-li:text-muted-foreground prose-h3:text-foreground">
+            <h3 className="text-xl font-semibold mb-4 text-foreground border-b pb-2">Job Description</h3>
+            <div 
+              className="mt-4 break-words leading-relaxed space-y-4"
+              dangerouslySetInnerHTML={{ __html: job.description || "" }} 
+            />
           </div>
         </div>
 
@@ -47,24 +48,28 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           <div className="sticky top-20 rounded-xl border bg-card p-6 shadow-sm animate-in fade-in slide-in-from-right-4 duration-500">
             <h3 className="text-lg font-semibold mb-4">Fast Apply Assistant</h3>
             
-            <div className="space-y-4 mb-6">
+            <div className="space-y-4 mb-6 text-sm">
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-primary mt-0.5" />
+                <div className="h-5 w-5 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 mt-0.5">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                </div>
                 <div>
-                  <p className="font-medium text-sm">Resume Match</p>
-                  <p className="text-xs text-muted-foreground">85% match with your profile</p>
+                  <p className="font-medium text-foreground">Matched</p>
+                  <p className="text-xs text-muted-foreground">This job matches your skill set.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="h-5 w-5 text-primary mt-0.5" />
+                <div className="h-5 w-5 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 mt-0.5">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                </div>
                 <div>
-                  <p className="font-medium text-sm">Skills aligned</p>
-                  <p className="text-xs text-muted-foreground">React, Next.js, UI/UX</p>
+                  <p className="font-medium text-foreground">Active Hub</p>
+                  <p className="text-xs text-muted-foreground">Company is actively hiring.</p>
                 </div>
               </div>
             </div>
 
-            <Button className="w-full mb-3" size="lg">
+            <Button className="w-full mb-3" size="lg" render={<a href={job.url} target="_blank" rel="noopener noreferrer" />}>
               Apply on Company Site <ExternalLink className="ml-2 h-4 w-4" />
             </Button>
             
