@@ -14,6 +14,7 @@ export function NavBar() {
           <div className="hidden md:flex gap-6 text-sm font-medium text-muted-foreground">
             <Link href="/dashboard" className="transition-colors hover:text-foreground">Dashboard</Link>
             <Link href="/tracker" className="transition-colors hover:text-foreground">Tracker</Link>
+            <Link href="/profile" className="transition-colors hover:text-foreground">Profile</Link>
           </div>
         </div>
         <div className="flex items-center gap-4">

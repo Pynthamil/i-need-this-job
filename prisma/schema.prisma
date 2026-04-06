@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
+  engineType = "library"
 }
 
 datasource db {
@@ -10,7 +11,11 @@ model User {
   id           String        @id @default(uuid())
   email        String        @unique
   password     String
+  name         String?
   resume_url   String?
+  portfolio_url String?
+  github_url   String?
+  linkedin_url String?
   preferences  String?       // Stored as JSON or comma-separated
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
